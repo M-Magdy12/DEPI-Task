@@ -21,5 +21,19 @@ pipeline {
                 }
             }
         }
+        stage('deploy') {
+            steps {
+                sshagent(credentials: ['key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@123.123.123.123 '
+                            docker login -u $DOCKER_USER -p $DOCKER_PASS
+                            docker pull $DOCKER_USER/nginximage:latest
+                            docker stop nginx-container || true
+                            docker rm nginx-container || true
+                            docker run -d --name nginx-container -p 80:80 $DOCKER_USER/nginximage:latest
+                        '
+                    """
+                }
+            }
     }
 }
