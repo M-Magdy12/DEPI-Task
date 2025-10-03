@@ -5,9 +5,20 @@ pipeline {
         stage('build') {
             steps {
                 sh """
-                    docker build -t  nginximage .
-                    docker images
+                    docker build -t nginximage .
                 """
+            }
+        }
+
+        stage('push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhubcred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag nginximage $DOCKER_USER/nginximage:latest
+                        docker push $DOCKER_USER/nginximage:latest
+                    """
+                }
             }
         }
     }
