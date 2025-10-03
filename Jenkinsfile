@@ -27,7 +27,7 @@ pipeline {
                 sshagent(credentials: ['key']) {
                     withCredentials([usernamePassword(credentialsId: 'dokcerhup', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@127.0.0.1 '
+                            ssh -o StrictHostKeyChecking=no target@127.0.0.1 '
                                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin &&
                                 docker pull $DOCKER_USER/nginximage:latest &&
                                 docker stop nginx-container || true &&
